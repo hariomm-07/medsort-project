@@ -1,0 +1,68 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MedSort – AI Medical Waste Segregation</title>
+<meta name="description" content="AI-based medical waste detection and segregation into four colour-coded bins with a low-power clock-gated controller.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>♻️</text></svg>">
+<link rel="stylesheet" href="style.css"></head><body>
+<nav class="nav"><div class="w navin">
+<a class="brand" href="#home">MedSort</a>
+<button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="menu"><span></span><span></span><span></span></button>
+<ul id="menu"><li><a href="#about">About</a></li><li><a href="#bins-sec">Bins</a></li><li><a href="#demo">Try it</a></li><li><a href="#monitor">Monitor</a></li><li><a href="#records">Records</a></li><li><a href="#pipeline">Pipeline</a></li><li><a href="#power">Low power</a></li><li><a href="#faq">FAQ</a></li></ul>
+</div></nav>
+
+<header id="home"><div class="w">
+<h1>AI-based medical waste detection and segregation</h1>
+<p>Four colour-coded bins following Indian biomedical waste categories, with a low-power VLSI controller that gates its clock when idle.</p>
+<div class="cta"><a class="btn p" href="#demo">Try the sorter</a><a class="btn o2" href="#about">How it works</a></div>
+<span class="badge" id="modelstat">Checking AI model…</span>
+</div></header>
+
+<main class="w">
+<section id="about"><h2>Why this project</h2>
+<div class="cols3">
+<div class="card"><h3>The problem</h3><p>Hospital waste is often mixed. One needle in the wrong bag can injure a worker, and infectious waste spoils recyclable material.</p></div>
+<div class="card"><h3>The approach</h3><p>A camera image is classified by an AI model, and a small controller opens the matching bin among four colour-coded bins.</p></div>
+<div class="card"><h3>The saving</h3><p>The controller's clock is switched off while no item is being processed, which reduces needless switching activity.</p></div>
+</div></section>
+
+<section id="bins-sec"><h2>The four bins <small class="note">(click a bin for details)</small></h2><div class="bins" id="bins"></div>
+<div class="card" id="bininfo" aria-live="polite">Select a bin to see what goes inside.</div></section>
+
+<section id="demo"><h2>Sort an item</h2><div class="grid">
+<div class="card"><label for="up"><b>Upload a medical-waste image</b></label>
+<p class="note">JPEG, PNG, WEBP or BMP, up to 8 MB. The trained model analyses the image pixels; the file name is never used. Images are not stored.</p>
+<input type="file" id="up" accept="image/jpeg,image/png,image/webp,image/bmp" class="file">
+<div class="btns" style="margin-bottom:8px"><button class="o" id="camon" type="button">Use camera</button><button class="p" id="snap" type="button" style="display:none">Capture photo</button><button class="n" id="auto" type="button">Auto-detect (live)</button><button class="o" id="capbtn" type="button">Take photo (phone camera)</button><input type="file" id="capin" accept="image/*" capture="environment" style="display:none"></div>
+<video id="vid" playsinline muted style="display:none;width:100%;max-height:220px;border-radius:8px;background:#000;margin-bottom:8px"></video>
+<div class="note" id="autostat" role="status" aria-live="polite"></div>
+<img id="prev" alt="Uploaded preview" style="max-height:90px;display:none;border-radius:8px;margin-bottom:10px">
+<div id="aihelp" class="msg warn" style="display:none"><b>AI engine not loaded.</b> <span id="aireason"></span><br>To enable automatic detection run <code>setup_ai.bat</code> (or <code>pip install torch transformers</code>), then restart <code>python app.py</code>. Until then choose the bin manually.</div>
+<div id="manualbox" style="display:none;margin-bottom:10px"><label class="note" for="mcat"><b>No trained model: choose the bin yourself</b> (recorded as manual, not AI)</label><select id="mcat" style="width:100%;margin-top:4px"><option value="">Select bin…</option></select></div>
+<div class="btns"><button class="p" id="start">Classify &amp; sort</button><button class="n" id="stop">Stop</button><button class="o" id="reset">Clear view</button></div>
+<div class="msg" id="msg" role="status" aria-live="polite">Choose an image, then press Classify &amp; sort.</div>
+<details style="margin-top:12px"><summary class="note">Animation-only demo (not AI, not recorded)</summary><div class="samples" id="samples" style="margin-top:8px"></div></details></div>
+<div class="card"><h3>Dashboard</h3>
+<dl class="stat"><dt>Total detected</dt><dd id="tot">0</dd><dt>Latest item</dt><dd id="last">–</dd><dt>Selected bin</dt><dd id="sel">–</dd>
+<dt>Classification</dt><dd id="conf">–</dd><dt>Status</dt><dd id="status">Idle</dd><dt>Clock gating</dt><dd id="cgs">Gated (idle)</dd></dl>
+<div class="tw"><table><thead><tr><th>Item</th><th>Bin</th><th>Conf.</th></tr></thead><tbody id="hist"><tr><td colspan="3" class="note">No items sorted yet.</td></tr></tbody></table></div></div></div></section>
+
+<section id="monitor"><h2>Bin monitoring <small class="note">(simulated fullness, no sensors connected)</small></h2><div class="mon" id="mon"></div></section>
+<section id="records"><h2>Tracking records</h2><div class="card">
+<div class="filters"><label>Category <select id="fcat"><option value="">All</option></select></label><label>From <input type="date" id="fd1"></label><label>To <input type="date" id="fd2"></label><button class="p" id="fgo">Apply</button><button class="o" id="fdl" type="button">⬇ Download CSV</button></div>
+<p class="note" id="sumline"></p><div class="tw"><table><thead><tr><th>Date / time</th><th>Category</th><th>Bin</th><th>Confidence</th><th>Status</th><th>Collection</th></tr></thead><tbody id="rec"><tr><td colspan="6" class="note">Loading…</td></tr></tbody></table></div>
+<p class="note">Disposal Not Confirmed: this system does not track physical collection or disposal.</p></div></section>
+<section id="pipeline"><h2>Pipeline</h2><div class="card"><div class="flow"><div class="st" id="st0">Camera input</div><i>›</i><div class="st" id="st1">AI detection</div><i>›</i><div class="st" id="st2">Waste classification</div><i>›</i><div class="st" id="st3">Bin selection controller</div><i>›</i><div class="st" id="st4">Four bins</div></div>
+<div class="flow" style="margin-top:10px"><div class="cg">Clock gating controller</div><span class="note">enables the clock to the controller and 2-bit class register only while an item is being processed.</span></div></div></section>
+
+<section id="power"><h2>Clock gating simulation</h2><div class="grid"><div class="card"><canvas id="wave" width="600" height="190" aria-label="Clock, enable and gated clock waveforms"></canvas>
+<p class="note">Top to bottom: main clock, clock enable, gated clock. Drawn by this page, not captured from GTKWave.</p></div>
+<div class="card"><div id="sw"></div><p class="note">Clock toggles counted in this browser simulation only. Real savings depend on synthesis and need power analysis of your design; none is claimed here.</p></div></div></section>
+
+<section id="faq"><h2>FAQ</h2>
+<details class="card"><summary>Is the classifier real?</summary><p>Yes when waste_model.pt is trained and loaded: the Flask API classifies image pixels. Without it, classification is unavailable and the page says so. Predictions below the confidence threshold need manual verification.</p></details>
+<details class="card"><summary>Is any hardware connected?</summary><p>No. Sorting is simulated on screen.</p></details>
+<details class="card"><summary>Are the power savings measured?</summary><p>No. The bars count simulated clock toggles; use your synthesis tool's power report for real numbers.</p></details>
+</section>
+</main>
+<footer><div class="w"><p>MedSort academic demo · Biomedical waste colours follow the Indian BMW rules summary used in this project.</p><a href="#home">Back to top</a></div></footer>
+<script src="app.js"></script></body></html>

@@ -1,0 +1,7 @@
+flask
+flask-cors
+pillow
+torch
+torchvision
+scikit-learn
+transformers   # optional: enables the zero-shot CLIP AI engine (no dataset needed, downloads ~600 MB once)
