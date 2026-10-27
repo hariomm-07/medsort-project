@@ -300,6 +300,7 @@ def create_app(config=None):
     def too_big(_): return err("too_large", "Image is larger than 8 MB.", 413)
     return app
 
+ app = create_app()
 if __name__ == "__main__":
     a = create_app(); c = a.config
     eng = "demo (colour heuristic, NOT AI)" if c["IS_DEMO"] else "zero-shot CLIP (not validated on medical waste)" if c["IS_ZEROSHOT"] else "trained model waste_model.pt" if c["PREDICT"] else "NONE - manual selection only"
